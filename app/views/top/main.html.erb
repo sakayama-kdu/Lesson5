@@ -1,0 +1,57 @@
+<h1>つぶやきアプリ</h1>
+
+<% if session[:login_uid] %>
+
+  ログイン中 :
+  <%= session[:login_uid] %>
+
+  <%= link_to "ログアウト", "/top/logout" %>
+
+<% else %>
+
+  <%= link_to "ログイン", "/top/login_form" %>
+
+  |
+
+  <%= link_to "ユーザ登録", new_user_path %>
+
+<% end %>
+
+<%= link_to "ユーザ一覧", users_path %>
+
+<hr>
+
+<% if current_user %>
+  <%= form_with model: Tweet.new do |f| %>
+    <%= f.label :message, "ツイート" %>
+    <%= f.text_area :message %>
+    <%= f.submit "投稿" %>
+  <% end %>
+<% end %>
+
+<% @tweets.each do |t| %>
+
+  <% if t.user %>
+
+    <%= t.user.uid %>
+
+    :
+
+    <%= t.message %>
+
+    <br>
+
+    いいね数: <%= t.likes.size %>
+
+    <% if current_user %>
+      <% like = current_user.likes.find_by(tweet_id: t.id) %>
+      <% if like %>
+        <%= button_to "いいね削除", like_path(like), method: :delete %>
+      <% else %>
+        <%= button_to "いいね", likes_path(tweet_id: t.id), method: :post %>
+      <% end %>
+    <% end %>
+
+  <% end %>
+
+<% end %>

@@ -1,0 +1,17 @@
+<h1>ログイン</h1>
+
+<%= form_with url: "/top/login" do |f| %>
+
+  UID
+  <%= f.text_field :uid %>
+
+  <br>
+
+  PASS
+  <%= f.password_field :password %>
+
+  <br>
+
+  <%= f.submit "ログイン" %>
+
+<% end %>

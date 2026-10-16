@@ -2,8 +2,6 @@
 
 one:
   uid: MyString
-  pass: MyString
 
 two:
-  uid: MyString
-  pass: MyString
+  uid: AnotherUser

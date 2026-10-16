@@ -1,0 +1,17 @@
+<h1>Tweet登録</h1>
+
+<%= form_with model: Tweet.new do |f| %>
+
+  Message
+  <%= f.text_field :message %>
+
+  <br>
+
+  User ID
+  <%= f.number_field :user_id %>
+
+  <br>
+
+  <%= f.submit "登録" %>
+
+<% end %>
