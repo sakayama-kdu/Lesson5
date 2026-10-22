@@ -5,6 +5,8 @@
   ログイン中 :
   <%= session[:login_uid] %>
 
+  <%= link_to "プロフィール", user_path(current_user) %>
+
   <%= link_to "ログアウト", "/top/logout" %>
 
 <% else %>

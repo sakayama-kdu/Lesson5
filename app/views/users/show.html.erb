@@ -1,0 +1,7 @@
+<h1>プロフィール</h1>
+
+<p>UID: <%= @user.uid %></p>
+<p>年齢: <%= @user.age.presence || "未設定" %></p>
+
+<%= link_to "プロフィールを編集", edit_user_path(@user) %>
+<%= link_to "トップへ戻る", root_path %>

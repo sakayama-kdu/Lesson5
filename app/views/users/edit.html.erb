@@ -1,0 +1,18 @@
+<h1>プロフィール編集</h1>
+
+<% if @user.errors.any? %>
+  <ul>
+    <% @user.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= form_with model: @user do |f| %>
+  <p>UID: <%= @user.uid %></p>
+  <%= f.label :age, "年齢" %>
+  <%= f.number_field :age, min: 0 %>
+  <%= f.submit "更新" %>
+<% end %>
+
+<%= link_to "プロフィールへ戻る", user_path(@user) %>
