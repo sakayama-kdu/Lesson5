@@ -17,7 +17,13 @@ class TopControllerTest < ActionDispatch::IntegrationTest
 
   test "registration stores a BCrypt digest and rejects duplicate uids" do
     assert_difference("User.count", 1) do
-      post users_url, params: { user: { uid: "new-user", password: "secret123" } }
+      post users_url, params: {
+        user: {
+          uid: "new-user",
+          password: "secret123",
+          password_confirmation: "secret123"
+        }
+      }
     end
 
     user = User.find_by!(uid: "new-user")
@@ -25,14 +31,38 @@ class TopControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
 
     assert_no_difference("User.count") do
-      post users_url, params: { user: { uid: "new-user", password: "secret456" } }
+      post users_url, params: {
+        user: {
+          uid: "new-user",
+          password: "secret456",
+          password_confirmation: "secret456"
+        }
+      }
+    end
+    assert_response :success
+  end
+
+  test "registration rejects a missing or mismatched password confirmation" do
+    assert_no_difference("User.count") do
+      post users_url, params: { user: { uid: "missing-confirmation", password: "secret123" } }
+    end
+    assert_response :success
+
+    assert_no_difference("User.count") do
+      post users_url, params: {
+        user: {
+          uid: "mismatched-confirmation",
+          password: "secret123",
+          password_confirmation: "different"
+        }
+      }
     end
     assert_response :success
   end
 
   test "registered user can log in, post, like, and remove a like" do
-    user = User.create!(uid: "workflow-user", password: "secret123")
-    other_user = User.create!(uid: "tweet-owner", password: "secret123")
+    user = User.create!(uid: "workflow-user", password: "secret123", password_confirmation: "secret123")
+    other_user = User.create!(uid: "tweet-owner", password: "secret123", password_confirmation: "secret123")
     tweet = Tweet.create!(message: "another user's tweet", user: other_user)
 
     post top_login_url, params: { uid: user.uid, password: "secret123" }
@@ -50,15 +80,28 @@ class TopControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Like.count", 1) do
       post likes_url, params: { tweet_id: tweet.id }
     end
-    like = user.likes.find_by!(tweet: tweet)
 
     assert_difference("Like.count", -1) do
-      delete like_url(like)
+      delete like_url(tweet)
+    end
+  end
+
+  test "liking and unliking an already updated tweet is idempotent" do
+    user = User.create!(uid: "repeat-user", password: "secret123", password_confirmation: "secret123")
+    tweet = Tweet.create!(message: "repeat tweet", user: users(:one))
+    post top_login_url, params: { uid: user.uid, password: "secret123" }
+
+    assert_difference("Like.count", 1) do
+      2.times { post likes_url, params: { tweet_id: tweet.id } }
+    end
+
+    assert_difference("Like.count", -1) do
+      2.times { delete like_url(tweet) }
     end
   end
 
   test "login rejects an incorrect password" do
-    user = User.create!(uid: "login-user", password: "secret123")
+    user = User.create!(uid: "login-user", password: "secret123", password_confirmation: "secret123")
 
     post top_login_url, params: { uid: user.uid, password: "incorrect" }
 

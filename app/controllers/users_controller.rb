@@ -32,10 +32,10 @@ class UsersController < ApplicationController
 
     if user.save
 
-      # 自動ログイン
+     
       session[:login_uid] = user.uid
 
-      # Topページへ移動
+      
       redirect_to root_path
 
     else

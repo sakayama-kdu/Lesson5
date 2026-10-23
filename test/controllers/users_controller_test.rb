@@ -9,6 +9,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get users_new_url
     assert_response :success
+    assert_select "input[name='user[password]'][type='password']"
+    assert_select "input[name='user[password_confirmation]'][type='password']"
+  end
+
+  test "user index does not expose password digests" do
+    user = User.create!(
+      uid: "listed-user",
+      password: "secret123",
+      password_confirmation: "secret123"
+    )
+
+    get users_index_url
+
+    assert_response :success
+    assert_includes response.body, user.uid
+    assert_not_includes response.body, user.password_digest
   end
 
   test "logged in user can view and update their profile" do

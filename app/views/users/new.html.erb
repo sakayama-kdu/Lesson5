@@ -10,15 +10,21 @@
     </ul>
   <% end %>
 
-  UID
+  <%= f.label :uid, "UID" %>
 
   <%= f.text_field :uid %>
 
   <br>
 
-  PASS
+  <%= f.label :password, "パスワード" %>
 
   <%= f.password_field :password %>
+
+  <br>
+
+  <%= f.label :password_confirmation, "パスワード（確認）" %>
+
+  <%= f.password_field :password_confirmation %>
 
   <br>
 

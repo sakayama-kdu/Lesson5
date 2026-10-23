@@ -1,9 +1,9 @@
 <h1>つぶやきアプリ</h1>
 
-<% if session[:login_uid] %>
+<% if current_user %>
 
   ログイン中 :
-  <%= session[:login_uid] %>
+  <%= current_user.uid %>
 
   <%= link_to "プロフィール", user_path(current_user) %>
 
@@ -46,9 +46,8 @@
     いいね数: <%= t.likes.size %>
 
     <% if current_user %>
-      <% like = current_user.likes.find_by(tweet_id: t.id) %>
-      <% if like %>
-        <%= button_to "いいね削除", like_path(like), method: :delete %>
+      <% if t.liked?(current_user) %>
+        <%= button_to "いいね削除", like_path(t), method: :delete %>
       <% else %>
         <%= button_to "いいね", likes_path(tweet_id: t.id), method: :post %>
       <% end %>
